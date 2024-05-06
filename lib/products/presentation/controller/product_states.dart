@@ -18,13 +18,9 @@ class GetAllProductsState extends Equatable implements ProductState{
   List<Object?> get props => [products];
 }
 
-class AddUpdateDeleteProductState extends Equatable implements ProductState{
+class AddUpdateDeleteProductState implements ProductState{
   final ProductResponse productResponse;
   const AddUpdateDeleteProductState({required this.productResponse});
-
-  @override
-  List<Object?> get props => [productResponse];
-
 }
 
 class ChangeProductImageState implements ProductState{}

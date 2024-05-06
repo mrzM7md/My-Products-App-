@@ -62,6 +62,7 @@ class ProductsDatasource implements BaseProductsDatasource {
   }
 
   Map<String, dynamic> _convertProductModelToJson({required Product product}) {
+    print("image: " + product.image);
     return ProductModel(
         id: product.id,
         title: product.title,

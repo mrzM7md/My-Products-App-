@@ -4,11 +4,12 @@ class ProductModel extends Product {
   const ProductModel(
       {
         required super.id,
-      required super.title,
-      required super.description,
-      required super.price,
-      required super.image,
-      required super.userId});
+        required super.title,
+        required super.description,
+        required super.price,
+        required super.image,
+        required super.userId
+      });
 
   factory ProductModel.fromJson(Map json) {
     return ProductModel(

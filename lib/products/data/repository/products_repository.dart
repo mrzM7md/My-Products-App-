@@ -40,7 +40,6 @@ class ProductsRepository implements BaseProductsRepository {
       if(response.statusCode == 200){
         if(jsonData['data'] != null){
           products = List<ProductModel>.from((jsonData['data'] as List).map((e) => ProductModel.fromJson(e) ) );
-          print(products);
         }
       }
     });
@@ -51,8 +50,10 @@ class ProductsRepository implements BaseProductsRepository {
   ProductResponseModel _getResponseResult({required Response response}) {
     var jsonData = jsonDecode(response.body);
     if(response.statusCode == 200) {
+      print("status 200");
       return ProductResponseModel.fromJson(json: jsonData);
     }
+    print("Another");
     return _getErrorResponseResult(jsonData: jsonData);
   }
 

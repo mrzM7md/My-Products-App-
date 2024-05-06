@@ -46,132 +46,116 @@ class _ProductCreateUpdateScreenState extends State<ProductCreateUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ProductCubit, ProductState>(
-      listener: (context, state) {
-        if (state is AddUpdateDeleteProductState) {
-          Color textColor = Colors.redAccent;
-          if (state.productResponse.responseProductStatus ==
-              ResponseProductStatus.success) {
-            textColor = Colors.black;
-          }
-          getToast(
-              message: state.productResponse.message,
-              bkgColor: Colors.white,
-              textColor: textColor);
-        }
-      },
-      listenWhen: (prev, current) => current is AddUpdateDeleteProductState,
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-            title: Text(product.title.isEmpty ? "No Name" : product.title)),
-        body: Padding(
-          padding: const EdgeInsetsDirectional.all(6),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                MaterialButton(
-                  color: Colors.black,
-                  onPressed: () {
-                    _scaffoldKey.currentState!.showBottomSheet(
-                         (ctx) {
-                          return Row(
-                            children: [
-                              Expanded(
-                                child: MaterialButton(
-                                  onPressed: () async {
-                                    await ImagePicker()
-                                        .pickImage(source: ImageSource.camera).then((xFile) {
-                                      if(xFile != null){
-                                        _imageFile = File(xFile.path);
-                                        ProductCubit.get(context).callChangeProductImage();
-                                      }
-                                    });
-                                  },
-                                  height: 120.0,
-                                  child: const Icon(
-                                    Icons.camera_alt_rounded,
-                                  ),
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+          title: Text(product.title.isEmpty ? "No Name" : product.title)),
+      body: Padding(
+        padding: const EdgeInsetsDirectional.all(6),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              MaterialButton(
+                color: Colors.black,
+                onPressed: () {
+                  _scaffoldKey.currentState!.showBottomSheet(
+                       (ctx) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: MaterialButton(
+                                onPressed: () async {
+                                  await ImagePicker()
+                                      .pickImage(source: ImageSource.camera).then((xFile) {
+                                    if(xFile != null){
+                                      _imageFile = File(xFile.path);
+                                      ProductCubit.get(context).callChangeProductImage();
+                                    }
+                                  });
+                                },
+                                height: 120.0,
+                                child: const Icon(
+                                  Icons.camera_alt_rounded,
                                 ),
                               ),
-                              Expanded(
-                                child: MaterialButton(
-                                  onPressed: () async {
-                                    await ImagePicker()
-                                        .pickImage(source: ImageSource.gallery).then((xFile) {
-                                      if(xFile != null){
-                                        _imageFile = File(xFile.path);
-                                        ProductCubit.get(context).callChangeProductImage();
-                                      }
-                                    });
-                                  },
-                                  height: 120.0,
-                                  child: const Icon(
-                                    Icons.image,
-                                  ),
+                            ),
+                            Expanded(
+                              child: MaterialButton(
+                                onPressed: () async {
+                                  await ImagePicker()
+                                      .pickImage(source: ImageSource.gallery).then((xFile) {
+                                    if(xFile != null){
+                                      _imageFile = File(xFile.path);
+                                      ProductCubit.get(context).callChangeProductImage();
+                                    }
+                                  });
+                                },
+                                height: 120.0,
+                                child: const Icon(
+                                  Icons.image,
                                 ),
-                              )
-                            ],
-                          );
-                        }
-                    );
-                  },
-                  child: const Text(
-                    "Add image",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                              ),
+                            )
+                          ],
+                        );
+                      }
+                  );
+                },
+                child: const Text(
+                  "Add image",
+                  style: TextStyle(color: Colors.white),
                 ),
-                BlocBuilder<ProductCubit, ProductState>(
-                  buildWhen: (prev, current) => current is ChangeProductImageState,
-                  builder: (context, state) {
-                    return ConditionalBuilder(
-                      condition: _imageFile != null || product.image.isNotEmpty ,
-                      builder: (ctx) =>
-                      _imageFile != null ? Image.file(
-                        _imageFile!,
-                        width: 50,
-                        height: 50,
-                      ) :
-                      Image.network(
-                        ApiConstance.httpLinkImage(imageName: product.image),
-                        width: 50,
-                        height: 50,
-                      ),
-                      fallback: (ctx) => Container(),
-                    );
-                  },
-                ),
-                Text("Product Name"),
-                TextField(
-                  controller: _nameController,
-                ),
-                Text("Product Description"),
-                TextField(
-                  controller: _descriptionController,
-                ),
-                Text("Product Price"),
-                TextField(
-                  controller: _priceController,
-                ),
-                MaterialButton(
-                  color: Colors.black,
-                  onPressed: () {
-                    product.id == -1 ? ProductCubit.get(context).addNewProduct(
+              ),
+              BlocBuilder<ProductCubit, ProductState>(
+                buildWhen: (prev, current) => current is ChangeProductImageState,
+                builder: (context, state) {
+                  return ConditionalBuilder(
+                    condition: _imageFile != null || product.image.isNotEmpty ,
+                    builder: (ctx) =>
+                    _imageFile != null ? Image.file(
+                      _imageFile!,
+                      width: 50,
+                      height: 50,
+                    ) :
+                    Image.network(
+                      ApiConstance.httpLinkImage(imageName: product.image),
+                      width: 50,
+                      height: 50,
+                    ),
+                    fallback: (ctx) => Container(),
+                  );
+                },
+              ),
+              Text("Product Name"),
+              TextField(
+                controller: _nameController,
+              ),
+              Text("Product Description"),
+              TextField(
+                controller: _descriptionController,
+              ),
+              Text("Product Price"),
+              TextField(
+                controller: _priceController,
+              ),
+              MaterialButton(
+                color: Colors.black,
+                onPressed: () {
+                  product.id == -1 ? ProductCubit.get(context).addNewProduct(
+                    imageFile: _imageFile,
+                    product: getProduct(),
+                  ) : ProductCubit.get(context).updateProduct(
                       imageFile: _imageFile,
                       product: getProduct(),
-                    ) : ProductCubit.get(context).updateProduct(
-                        imageFile: _imageFile,
-                        product: getProduct(),
-                    );
-
-                  },
-                  child: Text(
-                    product.id == -1 ? "GO" : "Update",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  );
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  product.id == -1 ? "GO" : "Update",
+                  style: TextStyle(color: Colors.white),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

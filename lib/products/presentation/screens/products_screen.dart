@@ -2,6 +2,8 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:products/core/constants/componnets.dart';
+import 'package:products/core/utilities/enums.dart';
 import 'package:products/products/presentation/components/items/product_item.dart';
 import 'package:products/products/presentation/controller/product_cubit.dart';
 import 'package:products/products/presentation/controller/product_states.dart';
@@ -33,7 +35,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
           },
         child: const Icon(Icons.add),
       ),
-      body: BlocBuilder<ProductCubit, ProductState>(
+      body: BlocConsumer<ProductCubit, ProductState>(
+        listener: (BuildContext context, ProductState state) {
+          if (state is AddUpdateDeleteProductState) {
+            Color textColor = Colors.redAccent;
+            if (state.productResponse.responseProductStatus ==
+                ResponseProductStatus.success) {
+              textColor = Colors.black;
+            }
+            getToast(
+                message: state.productResponse.message,
+                bkgColor: Colors.white,
+                textColor: textColor);
+          }
+        },
+        listenWhen: (prev, current) => current is AddUpdateDeleteProductState,
         buildWhen: (prev, current) => current is GetAllProductsState,
         builder: (context, state) {
           if(state is GetAllProductsState){
@@ -49,8 +65,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             );
           }
           return const Center(child: CircularProgressIndicator());
-        },
-      ),
+        }, ),
     );
   }
 }
