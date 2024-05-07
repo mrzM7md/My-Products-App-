@@ -10,6 +10,7 @@ import 'package:products/core/constants/componnets.dart';
 import 'package:products/core/local/cache_helper.dart';
 import 'package:products/core/network/api_constance.dart';
 import 'package:products/core/utilities/enums.dart';
+import 'package:products/core/utilities/images.dart';
 import 'package:products/products/domain/entities/Product.dart';
 import 'package:products/products/presentation/controller/product_cubit.dart';
 import 'package:products/products/presentation/controller/product_states.dart';
@@ -48,6 +49,182 @@ class _ProductCreateUpdateScreenState extends State<ProductCreateUpdateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: () {
+          _scaffoldKey.currentState!.showBottomSheet((ctx) {
+            return SizedBox(
+              height: 180,
+              child: Column(
+                children: [
+                  buildText(text: "Select an image", fontSize: 22, maxLines: 1, isBold: false),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: MaterialButton(
+                          onPressed: () async {
+                            await ImagePicker()
+                                .pickImage(source: ImageSource.camera)
+                                .then((xFile) {
+                              if (xFile != null) {
+                                _imageFile = File(xFile.path);
+                                ProductCubit.get(context).callChangeProductImage();
+                              }
+                              Navigator.pop(context);
+                            });
+                          },
+                          height: 120.0,
+                          child: const Icon(
+                            Icons.camera_alt_rounded,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: MaterialButton(
+                          onPressed: () async {
+                            await ImagePicker()
+                                .pickImage(source: ImageSource.gallery)
+                                .then((xFile) {
+                              if (xFile != null) {
+                                _imageFile = File(xFile.path);
+                                ProductCubit.get(context).callChangeProductImage();
+                              }
+                              Navigator.pop(context);
+                            });
+                          },
+                          height: 120.0,
+                          child: const Icon(
+                            Icons.image,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            );
+          });
+        },
+        backgroundColor: Colors.grey[300],
+        shape: const CircleBorder(),
+        child: const Icon(Icons.image),
+      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 300,
+            backgroundColor: Colors.black38,
+            flexibleSpace: FlexibleSpaceBar(
+                title: Text(product.title.isEmpty ? "No Name" : product.title),
+                centerTitle: false,
+                background: BlocBuilder<ProductCubit, ProductState>(
+                    buildWhen: (prev, current) =>
+                        current is ChangeProductImageState,
+                    builder: (context, state) {
+                      return ConditionalBuilder(
+                        condition:
+                            _imageFile != null || product.image.isNotEmpty,
+                        builder: (ctx) => _imageFile != null
+                            ? Image.file(
+                                _imageFile!,
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.fill,
+                              )
+                            : Image.network(
+                                fit: BoxFit.fill,
+                                ApiConstance.httpLinkImage(
+                                    imageName: product.image),
+                                width: 50,
+                                height: 50,
+                              ),
+                        fallback: (ctx) => Image.asset(
+                          appLogoImage,
+                          fit: BoxFit.contain,
+                          width: 50,
+                          height: 50,
+                        ),
+                      );
+                    })),
+          ),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                      start: 20, bottom: 10, top: 80),
+                  child: buildText(
+                      text: "Product Name",
+                      fontSize: 18,
+                      maxLines: 1,
+                      isBold: true),
+                ),
+                appTextField(
+                    controller: _nameController,
+                    obscureText: false,
+                    hintText: "product name here",
+                    onChange: (value) {}),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                      start: 20, bottom: 10, top: 40),
+                  child: buildText(
+                      text: "Product Description",
+                      fontSize: 18,
+                      maxLines: 1,
+                      isBold: true),
+                ),
+                appTextField(
+                    controller: _descriptionController,
+                    obscureText: false,
+                    hintText: "product description here",
+                    onChange: (value) {}),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                      start: 20, bottom: 10, top: 40),
+                  child: buildText(
+                      text: "Product Price",
+                      fontSize: 18,
+                      maxLines: 1,
+                      isBold: true),
+                ),
+                appTextField(
+                    controller: _priceController,
+                    obscureText: false,
+                    hintText: "product name here",
+                    onChange: (value) {}),
+                Padding(
+                  padding:
+                      const EdgeInsetsDirectional.only(top: 40, bottom: 240),
+                  child: appButton(
+                    onTap: () {
+                      {
+                        product.id == -1
+                            ? ProductCubit.get(context).addNewProduct(
+                                imageFile: _imageFile,
+                                product: getProduct(),
+                              )
+                            : ProductCubit.get(context).updateProduct(
+                                imageFile: _imageFile,
+                                product: getProduct(),
+                              );
+                        Navigator.pop(context);
+                      }
+                    },
+                    text: product.id == -1
+                        ? "Add".toUpperCase()
+                        : "Update".toUpperCase(),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+
+    Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
           title: Text(product.title.isEmpty ? "No Name" : product.title)),
       body: Padding(
@@ -58,48 +235,50 @@ class _ProductCreateUpdateScreenState extends State<ProductCreateUpdateScreen> {
               MaterialButton(
                 color: Colors.black,
                 onPressed: () {
-                  _scaffoldKey.currentState!.showBottomSheet(
-                       (ctx) {
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: MaterialButton(
-                                onPressed: () async {
-                                  await ImagePicker()
-                                      .pickImage(source: ImageSource.camera).then((xFile) {
-                                    if(xFile != null){
-                                      _imageFile = File(xFile.path);
-                                      ProductCubit.get(context).callChangeProductImage();
-                                    }
-                                  });
-                                },
-                                height: 120.0,
-                                child: const Icon(
-                                  Icons.camera_alt_rounded,
-                                ),
-                              ),
+                  _scaffoldKey.currentState!.showBottomSheet((ctx) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: MaterialButton(
+                            onPressed: () async {
+                              await ImagePicker()
+                                  .pickImage(source: ImageSource.camera)
+                                  .then((xFile) {
+                                if (xFile != null) {
+                                  _imageFile = File(xFile.path);
+                                  ProductCubit.get(context)
+                                      .callChangeProductImage();
+                                }
+                              });
+                            },
+                            height: 120.0,
+                            child: const Icon(
+                              Icons.camera_alt_rounded,
                             ),
-                            Expanded(
-                              child: MaterialButton(
-                                onPressed: () async {
-                                  await ImagePicker()
-                                      .pickImage(source: ImageSource.gallery).then((xFile) {
-                                    if(xFile != null){
-                                      _imageFile = File(xFile.path);
-                                      ProductCubit.get(context).callChangeProductImage();
-                                    }
-                                  });
-                                },
-                                height: 120.0,
-                                child: const Icon(
-                                  Icons.image,
-                                ),
-                              ),
-                            )
-                          ],
-                        );
-                      }
-                  );
+                          ),
+                        ),
+                        Expanded(
+                          child: MaterialButton(
+                            onPressed: () async {
+                              await ImagePicker()
+                                  .pickImage(source: ImageSource.gallery)
+                                  .then((xFile) {
+                                if (xFile != null) {
+                                  _imageFile = File(xFile.path);
+                                  ProductCubit.get(context)
+                                      .callChangeProductImage();
+                                }
+                              });
+                            },
+                            height: 120.0,
+                            child: const Icon(
+                              Icons.image,
+                            ),
+                          ),
+                        )
+                      ],
+                    );
+                  });
                 },
                 child: const Text(
                   "Add image",
@@ -107,21 +286,23 @@ class _ProductCreateUpdateScreenState extends State<ProductCreateUpdateScreen> {
                 ),
               ),
               BlocBuilder<ProductCubit, ProductState>(
-                buildWhen: (prev, current) => current is ChangeProductImageState,
+                buildWhen: (prev, current) =>
+                    current is ChangeProductImageState,
                 builder: (context, state) {
                   return ConditionalBuilder(
-                    condition: _imageFile != null || product.image.isNotEmpty ,
-                    builder: (ctx) =>
-                    _imageFile != null ? Image.file(
-                      _imageFile!,
-                      width: 50,
-                      height: 50,
-                    ) :
-                    Image.network(
-                      ApiConstance.httpLinkImage(imageName: product.image),
-                      width: 50,
-                      height: 50,
-                    ),
+                    condition: _imageFile != null || product.image.isNotEmpty,
+                    builder: (ctx) => _imageFile != null
+                        ? Image.file(
+                            _imageFile!,
+                            width: 50,
+                            height: 50,
+                          )
+                        : Image.network(
+                            ApiConstance.httpLinkImage(
+                                imageName: product.image),
+                            width: 50,
+                            height: 50,
+                          ),
                     fallback: (ctx) => Container(),
                   );
                 },
@@ -130,7 +311,7 @@ class _ProductCreateUpdateScreenState extends State<ProductCreateUpdateScreen> {
               TextField(
                 controller: _nameController,
               ),
-              Text("Product Description"),
+              const Text("Product Description"),
               TextField(
                 controller: _descriptionController,
               ),
@@ -141,13 +322,15 @@ class _ProductCreateUpdateScreenState extends State<ProductCreateUpdateScreen> {
               MaterialButton(
                 color: Colors.black,
                 onPressed: () {
-                  product.id == -1 ? ProductCubit.get(context).addNewProduct(
-                    imageFile: _imageFile,
-                    product: getProduct(),
-                  ) : ProductCubit.get(context).updateProduct(
-                      imageFile: _imageFile,
-                      product: getProduct(),
-                  );
+                  product.id == -1
+                      ? ProductCubit.get(context).addNewProduct(
+                          imageFile: _imageFile,
+                          product: getProduct(),
+                        )
+                      : ProductCubit.get(context).updateProduct(
+                          imageFile: _imageFile,
+                          product: getProduct(),
+                        );
                   Navigator.pop(context);
                 },
                 child: Text(
@@ -162,15 +345,13 @@ class _ProductCreateUpdateScreenState extends State<ProductCreateUpdateScreen> {
     );
   }
 
-  Product getProduct(){
+  Product getProduct() {
     return Product(
-            id: product.id,
-            title: _nameController.text,
-            description: _descriptionController.text,
-            price: double.parse(_priceController.text),
-            image: product.image,
-            userId: CacheHelper.getInt(key: "user_id")
-    );
+        id: product.id,
+        title: _nameController.text,
+        description: _descriptionController.text,
+        price: double.parse(_priceController.text),
+        image: product.image,
+        userId: CacheHelper.getInt(key: "user_id"));
   }
-
 }

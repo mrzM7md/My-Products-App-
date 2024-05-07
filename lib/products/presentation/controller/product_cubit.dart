@@ -29,10 +29,10 @@ class ProductCubit extends Cubit<ProductState> {
 
   static ProductCubit get(context) => BlocProvider.of(context);
 
-  void callUserProducts() {
+  void callUserProducts(String keyWord) {
     int userId = CacheHelper.getInt(key: 'user_id');
     getAllUserProductsUseCase(parameters: GetAllUserProductsParameters(userId: userId)).then((products) {
-      emit(GetAllProductsState(products: products));
+      emit(GetAllProductsState(products: products.where((x) => x.title.toUpperCase().contains(keyWord.toUpperCase()) || x.description.toUpperCase().contains(keyWord.toUpperCase()) ).toList()));
     });
   }
 
@@ -40,15 +40,16 @@ class ProductCubit extends Cubit<ProductState> {
     addNewProductUseCase(parameters: AddNewProductParameters(imageFile: imageFile, product: product)).then((response) {
       emit(AddUpdateDeleteProductState(productResponse: ProductResponse(message: response.message, responseProductStatus: response.responseProductStatus)));
       if(response.responseProductStatus == ResponseProductStatus.success){
-        callUserProducts();
+        callUserProducts("");
       }
     });
   }
+
   void updateProduct({required File? imageFile, required Product product}) {
     updateProductUseCase(parameters: UpdateProductParameters(imageFile: imageFile, product: product)).then((response) {
       emit(AddUpdateDeleteProductState(productResponse: ProductResponse(message: response.message, responseProductStatus: response.responseProductStatus)));
       if(response.responseProductStatus == ResponseProductStatus.success){
-        callUserProducts();
+        callUserProducts("");
       }
     });
     }
@@ -57,7 +58,7 @@ class ProductCubit extends Cubit<ProductState> {
     deleteProductUseCase(parameters: DeleteNewProductParameters(userId: product.userId, productId: product.id, imageName: product.image)).then((response) {
       emit(AddUpdateDeleteProductState(productResponse: ProductResponse(message: response.message, responseProductStatus: response.responseProductStatus)));
       if(response.responseProductStatus == ResponseProductStatus.success){
-        callUserProducts();
+        callUserProducts("");
       }
     });
   }
@@ -65,4 +66,5 @@ class ProductCubit extends Cubit<ProductState> {
     void callChangeProductImage(){
       emit(ChangeProductImageState());
     }
+
 }

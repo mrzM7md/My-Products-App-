@@ -33,10 +33,22 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) => sl<ProductCubit>())
       ],
-      child: const MaterialApp(
-        debugShowMaterialGrid: false,
-        home: LoginScreen(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: const LoginScreen(),
+        theme: appTheme(),
       ),
+    );
+  }
+
+  ThemeData appTheme(){
+    return ThemeData(
+      scaffoldBackgroundColor: Colors.grey[300],
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        centerTitle: false,
+        backgroundColor: Colors.grey[300],
+      )
     );
   }
 }

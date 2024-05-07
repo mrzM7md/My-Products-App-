@@ -16,7 +16,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   // ############### Start Login Business // ###############
   void login({required Auth auth}){
-    emit(const LoginState(status: ResponseAuthStatus.loading, message: "Loading"));
+    emit(const LoginState(status: ResponseAuthStatus.loading, message: "Loading")); // emit = call state
     loginUseCase(parameters: LoginParameters(auth: auth)).then((authResponse) {
         emit(LoginState(status: authResponse.statue, message: authResponse.message));
         if (authResponse.statue == ResponseAuthStatus.success){

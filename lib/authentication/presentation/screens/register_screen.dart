@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:products/authentication/data/models/auth_model.dart';
 import 'package:products/authentication/presentation/controller/auth_cubit.dart';
 import 'package:products/authentication/presentation/controller/auth_states.dart';
-import 'package:products/authentication/presentation/screens/login_screen.dart';
 import 'package:products/core/constants/componnets.dart';
 import 'package:products/core/utilities/enums.dart';
 
@@ -96,9 +95,12 @@ class RegisterScreen extends StatelessWidget {
                     );
                   }, listener: (BuildContext context, AuthState state) {
                   if(state is RegisterState && state.status != ResponseAuthStatus.loading){
-                    getToast(message: state.message, bkgColor: Colors.white, textColor: Colors.black);
                     if(state.status == ResponseAuthStatus.success){
+                      getToast(message: state.message, bkgColor: Colors.white, textColor: Colors.black);
                       Navigator.pop(context);
+                    }
+                    else{
+                      getToast(message: state.message, bkgColor: Colors.white, textColor: Colors.red);
                     }
                   }
                 },
