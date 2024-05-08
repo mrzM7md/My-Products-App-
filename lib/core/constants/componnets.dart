@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,7 +26,6 @@ Widget appButton({required Function()? onTap, required String text}){
     onTap: onTap,
     child: Container(
       padding: const EdgeInsets.all(25),
-      margin: const EdgeInsets.symmetric(horizontal: 25),
       decoration: BoxDecoration(
         color: Colors.black87,
         borderRadius: BorderRadius.circular(8),
@@ -47,26 +45,30 @@ Widget appButton({required Function()? onTap, required String text}){
 }
 
 
-Widget appTextField ({Widget? preIcon, required controller, required bool obscureText, required String hintText, required Function(dynamic value) onChange}) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-    child: TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-      enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.white),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.grey.shade400),
-      ),
-      fillColor: Colors.grey.shade200,
-      filled: true,
-      prefixIcon: preIcon,
-      hintText: hintText,
-      hintStyle: TextStyle(color: Colors.grey[500]),),
-      onChanged: onChange,
+Widget appTextField ({
+  TextInputType keyboardType = TextInputType.text,
+  String? Function(String? value)? validate,
+  Widget? preIcon, required controller, required bool obscureText, required String hintText,
+  required Function(dynamic value) onChange
+}) {
+  return TextFormField(
+    validator: validate,
+    controller: controller,
+    obscureText: obscureText,
+    decoration: InputDecoration(
+    enabledBorder: const OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.white),
     ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.grey.shade400),
+    ),
+    fillColor: Colors.grey.shade200,
+    filled: true,
+    prefixIcon: preIcon,
+    hintText: hintText,
+    hintStyle: TextStyle(color: Colors.grey[500]),),
+    onChanged: onChange,
+    keyboardType: keyboardType,
   );
 }
 
@@ -88,13 +90,13 @@ Widget buildNoData({required String image, required String text})=>SingleChildSc
   ),
 );
 
-Widget buildText({required String text, required double fontSize, required int maxLines, required bool isBold}) {
+Widget buildText({align = TextAlign.start, required String text, required double fontSize, required int maxLines, required bool isBold}) {
   return Text(text, style: TextStyle(
       fontSize: fontSize,
-      fontWeight: isBold ? FontWeight.bold : null
+      fontWeight: isBold ? FontWeight.bold : null,
   ),
     maxLines: maxLines,
     overflow: TextOverflow.ellipsis,
-    textAlign: TextAlign.start,
+    textAlign: align,
   );
 }

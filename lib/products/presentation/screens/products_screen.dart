@@ -57,14 +57,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
       body: Column(
           children: [
             const SizedBox(height: 30,),
-            appTextField(
-              preIcon: const Icon(Icons.search),
-              controller: TextEditingController(),
-              obscureText: false,
-              hintText: "Search by title or description",
-              onChange: (value) {
-                ProductCubit.get(context).callUserProducts(value.toString());
-              }
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: appTextField(
+                preIcon: const Icon(Icons.search),
+                controller: TextEditingController(),
+                obscureText: false,
+                hintText: "Search by title or description",
+                onChange: (value) {
+                  ProductCubit.get(context).callUserProducts(value.toString());
+                }
+              ),
             ),
             Expanded(
               child: BlocConsumer<ProductCubit, ProductState>(

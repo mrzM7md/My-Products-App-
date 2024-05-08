@@ -4,7 +4,8 @@ import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 
 class ApiConstance {
-  static const String httpServerLink = "http://10.0.2.2:1234/products_api";
+  // static const String httpServerLink = "http://10.0.2.2:1234/products_api";
+  static const String httpServerLink = "https://products.mrzsw.com";
 
   static const String httpLinkSignUp = '$httpServerLink/auth/signup.php';
   static const String httpLinkLogin = '$httpServerLink/auth/login.php';
