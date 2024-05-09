@@ -51,7 +51,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (ctx) => sl<ProductCreateUpdateScreen>()));
             },
-          label: const Row(children: [Text("New Product"), Icon(Icons.add)],),
+          label: Row(children: [Text("New Product"), Icon(Icons.add)],),
         ),
       ),
       body: Column(

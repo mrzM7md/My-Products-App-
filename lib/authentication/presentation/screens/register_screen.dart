@@ -7,7 +7,6 @@ import 'package:products/authentication/presentation/controller/auth_states.dart
 import 'package:products/core/constants/componnets.dart';
 import 'package:products/core/utilities/enums.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:products/core/utilities/images.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -46,7 +45,7 @@ class RegisterScreen extends StatelessWidget {
                       SizedBox(width: double.infinity, child: buildText(align: TextAlign.center, text: "register to app to save your products", fontSize: 16, maxLines: 1, isBold: false)),
 
                       const SizedBox(height: 20,),
-                      appTextField(preIcon: const Icon(Icons.person_2_outlined), controller: nameController, obscureText: false, hintText: "Name", onChange: (value){},
+                      appTextField(preIcon: const Icon(Icons.person_outline_rounded), controller: nameController, obscureText: false, hintText: "Name", onChange: (value){},
                           validate:(value){
                             if(value.toString().isEmpty){
                               return "name required";
@@ -111,7 +110,7 @@ class RegisterScreen extends StatelessWidget {
                                   String password = passwordController.text;
                                   AuthCubit.get(context).register(auth: AuthModel(name: name, email: email, password: password, confirmPassword: password, username: username));
                               }
-                            }, text: "Login".toUpperCase()),
+                            }, text: "register".toUpperCase()),
                           );
                         },
                         listener: (BuildContext context, AuthState state) {
